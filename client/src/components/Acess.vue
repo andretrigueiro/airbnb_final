@@ -93,10 +93,8 @@
         </b-button-group>
       </b-form>
       <alert  :message=message
-              :show=5
-              dismissible
-              variant="sucess"
-              v-if="showMessage">
+              v-if="showMessage"
+      >
       </alert>
     </b-modal>
   </div>
@@ -111,7 +109,7 @@ export default {
     return {
       users: [],
       message: '',
-      showMessage: false,
+      showMessage: true,
       loginUserForm: {
         user: '',
         password: '',
@@ -143,10 +141,9 @@ export default {
     addUser(payload) {
       const path = 'http://localhost:5000/users';
       axios.post(path, payload)
-        .then(() => {
+        .then((res) => {
+          this.message = res.data.message;
           this.getUsers();
-          this.message = 'User added!';
-          this.showMessage = true;
         })
         .catch((error) => {
           // eslint-disable-next-line
@@ -173,16 +170,26 @@ export default {
       this.addUser(payload);
       this.initForm();
     },
+    matchPassword(password, confirmPassword) {
+      if (password === confirmPassword) {
+        return true;
+      }
+      return false;
+    },
     onSubmitSignin(evt) {
       evt.preventDefault();
       // this.$refs.SignInModal.hide();
-      const payload = {
-        user: this.signinUserForm.user,
-        password: this.signinUserForm.password,
-        email: this.signinUserForm.password,
-        type: this.signinUserForm.type,
-      };
-      this.addUser(payload);
+      if (!this.matchPassword(this.signinUserForm.password, this.signinUserForm.confirmPassword)) {
+        this.message = 'Password doesnt match. Try again';
+      } else {
+        const payload = {
+          user: this.signinUserForm.user,
+          password: this.signinUserForm.password,
+          email: this.signinUserForm.email,
+          type: this.signinUserForm.type,
+        };
+        this.addUser(payload);
+      }
       this.initForm();
     },
   },

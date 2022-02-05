@@ -7,8 +7,8 @@
 
       <b-collapse id="nav-collapse" is-nav>
         <b-navbar-nav class="ml-auto">
-          <b-nav-item class="text-modifier" href="#">Guest</b-nav-item>
-          <b-nav-item class="text-modifier" href="#">Host</b-nav-item>
+          <b-nav-item class="text-modifier" href="http://localhost:8080/guest">Guest</b-nav-item>
+          <b-nav-item class="text-modifier" href="http://localhost:8080/host">Host</b-nav-item>
         </b-navbar-nav>
 
         <!-- Right aligned nav items -->
