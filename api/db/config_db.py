@@ -2,6 +2,7 @@ import pymongo
 import click
 from flask import g
 from flask.cli import with_appcontext
+from api.db.mongodb import DATABASE
 
 USERS = [
     {
@@ -24,19 +25,14 @@ USERS = [
     },
 ]
 
-# Initiate the Database connection
-client = pymongo.MongoClient("mongodb+srv://andretrigueiro:8rMMVfyYU1c0zmgy@cluster0.ofzoa.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
-
-# Insert the test users contained in initi_db file
-def migrate_users(db):
-    db.users.insert_many(USERS)
-
 # Command line to populate the DB with test users
 @click.command('populate-db')
 @with_appcontext
 def populate_db_command():
     """Populate DB with data."""
-    migrate_users()
+    db = DATABASE.airbnb_final
+    users = db.users
+    users.insert_many(USERS)
     click.echo('Populated the database.')
 
 # Initiate the database
@@ -54,7 +50,7 @@ def init_db_command():
 # Associate the db with G element
 def get_db():
     if 'db' not in g:
-        g.db = client.airbnb_final
+        g.db = DATABASE.airbnb_final
 
     return g.db
 
@@ -63,7 +59,7 @@ def close_db(e=None):
     db = g.pop('db', None)
 
     if db is not None:
-        db.close()
+        DATABASE.close()
 
 # Function to register these functions
 def init_app(app):

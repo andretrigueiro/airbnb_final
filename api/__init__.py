@@ -1,5 +1,6 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
+# from api.views import add_views
 
 USERS = [
     {
@@ -37,18 +38,15 @@ def create_app(test_config=None):
     # enable CORS
     CORS(app, resources={r'/*': {'origins': '*'}})
 
+    # adding views
+    # add_views(app)
+
     if test_config is None:
         # load the instance config, if it exists, when not testing
         app.config.from_pyfile('config.py', silent=True)
     else:
         # load the test config if passed in
         app.config.from_mapping(test_config)
-
-    # # ensure the instance folder exists
-    # try:
-    #     os.makedirs(app.instance_path)
-    # except OSError:
-    #     pass
 
     def check_user(user_email):
         for user in USERS:
@@ -82,7 +80,7 @@ def create_app(test_config=None):
             response_object['users'] = USERS
         return jsonify(response_object)
 
-    from . import db
-    db.init_app(app)
+    from api.db.config_db import init_app
+    init_app(app)
 
     return app
