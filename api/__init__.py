@@ -1,27 +1,8 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
-# from api.views import add_views
 
-USERS = [
-    {
-        'user': 'ronaldinho',
-        'password': '123',
-        'email': 'ronaldinho@gmail.com',
-        'type': 'host'
-    },
-    {
-        'user': 'ronaldo',
-        'password': '1234',
-        'email': 'ronaldo@gmail.com',
-        'type': 'guest'
-    },
-    {
-        'user': 'rivaldo',
-        'password': '12345',
-        'email': 'rivaldo@gmail.com',
-        'type': 'guest'
-    },
-]
+from api.db.config_db import get_db
+# from api.views import add_views
 
 # configuration
 DEBUG = True
@@ -32,7 +13,6 @@ def create_app(test_config=None):
     app.config.from_object(__name__)
     # app.config.from_mapping(
     #     SECRET_KEY='dev',
-    #     # DATABASE=os.path.join(app.instance_path, 'flaskr.sqlite'),
     # )
 
     # enable CORS
@@ -48,11 +28,7 @@ def create_app(test_config=None):
         # load the test config if passed in
         app.config.from_mapping(test_config)
 
-    def check_user(user_email):
-        for user in USERS:
-            if user['email'] == user_email:
-                return True
-        return False
+
 
     # sanity check route
     @app.route('/ping', methods=['GET'])
@@ -60,27 +36,18 @@ def create_app(test_config=None):
         return jsonify('pong!')
 
     # users route
-    @app.route('/users', methods=['GET', 'POST'])
+    @app.route('/users', methods=['GET'])
     def all_users():
+        db = get_db()
+        users = db.users
         response_object = {'status': 'success'}
-        if request.method == 'POST':
-            post_data = request.get_json()
-            email = post_data.get('email')
-            if check_user(email):
-                response_object['message'] = 'Email already in use! Try other'
-            else:
-                USERS.append({
-                    'user': post_data.get('user'),
-                    'password': post_data.get('password'),
-                    'email': email,
-                    'type': post_data.get('type')
-                })
-                response_object['message'] = 'User added!'
-        else:
-            response_object['users'] = USERS
+        response_object['users'] = users
         return jsonify(response_object)
 
     from api.db.config_db import init_app
     init_app(app)
+
+    from . import auth
+    app.register_blueprint(auth.bp)
 
     return app

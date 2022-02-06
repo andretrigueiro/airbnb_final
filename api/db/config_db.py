@@ -1,29 +1,8 @@
-import pymongo
 import click
 from flask import g
 from flask.cli import with_appcontext
 from api.db.mongodb import DATABASE
-
-USERS = [
-    {
-        'user': 'ronaldinho',
-        'password': '123',
-        'email': 'ronaldinho@gmail.com',
-        'type': 'host'
-    },
-    {
-        'user': 'ronaldo',
-        'password': '1234',
-        'email': 'ronaldo@gmail.com',
-        'type': 'guest'
-    },
-    {
-        'user': 'rivaldo',
-        'password': '12345',
-        'email': 'rivaldo@gmail.com',
-        'type': 'guest'
-    },
-]
+from api.db.userdata import USERS
 
 # Command line to populate the DB with test users
 @click.command('populate-db')
