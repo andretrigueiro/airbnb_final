@@ -128,7 +128,7 @@ export default {
   },
   methods: {
     getUsers() {
-      const path = 'http://localhost:5000/users';
+      const path = 'http://localhost:5000/users/all_users';
       axios.get(path)
         .then((res) => {
           this.users = res.data.users;
@@ -139,7 +139,7 @@ export default {
         });
     },
     addUser(payload) {
-      const path = 'http://localhost:5000/users';
+      const path = 'http://localhost:5000/auth/register';
       axios.post(path, payload)
         .then((res) => {
           this.message = res.data.message;

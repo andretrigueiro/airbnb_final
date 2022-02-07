@@ -7,13 +7,12 @@ from werkzeug.security import check_password_hash, generate_password_hash
 
 from api.db.config_db import get_db
 
+from api.db.mongodb.users_db import find_all, find_by_email, find_one, set_host
+
 bp = Blueprint('auth', __name__, url_prefix='/auth')
 
 def check_user(user_email):
-    db = get_db()
-    users = db.users
-    for user in users:
-        if user['email'] == user_email:
+    if find_by_email(user_email):
             return True
     return False
 
@@ -93,3 +92,15 @@ def logout():
     response_object['message'] = 'User logged out!'
 
     return jsonify(response_object)
+
+def login_required(view):
+    response_object = {'status': 'success'}
+    @functools.wraps(view)
+    def wrapped_view(**kwargs):
+        if g.user is None:
+            response_object['message'] = 'No user logged in!'
+            return jsonify(response_object)
+
+        return view(**kwargs)
+
+    return wrapped_view
