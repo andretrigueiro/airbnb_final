@@ -1,7 +1,7 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify
 from flask_cors import CORS
 
-from api.db.config_db import init_db, close_db, init_app
+from api.db.config_db import init_app
 
 # configuration
 DEBUG = True
@@ -9,7 +9,10 @@ DEBUG = True
 def create_app(test_config=None):
     # create and configure the app
     app = Flask(__name__, instance_relative_config=True)
-    app.config.from_object(__name__)
+    #app.config.from_object(__name__)
+    app.config.from_mapping(
+        SECRET_KEY='dev',
+    )
 
     # enable CORS
     CORS(app, resources={r'/*': {'origins': '*'}})

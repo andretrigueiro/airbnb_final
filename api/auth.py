@@ -1,13 +1,13 @@
 import functools
 
 from flask import (
-    Blueprint, flash, g, redirect, jsonify, request, session, url_for
+    Blueprint, flash, g, jsonify, request, session
 )
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from api.db.config_db import get_db
 
-from api.db.mongodb.users_db import find_all, find_by_email, find_one, set_host
+from api.db.mongodb.users_db import find_all, find_by_email, find_one, set_host, insert_one
 
 bp = Blueprint('auth', __name__, url_prefix='/auth')
 
@@ -18,8 +18,6 @@ def check_user(user_email):
 
 @bp.route('/register', methods=('GET', 'POST'))
 def register():
-    db = get_db()
-    users = db.users
     response_object = {'status': 'success'}
 
     if request.method == 'POST':
@@ -39,51 +37,56 @@ def register():
                 'email': email,
                 'type': type
             }
-            users.insert_one(user_to_add)
+            insert_one(user_to_add)
             response_object['message'] = 'User added!'
     else:
-        response_object['users'] = users
+        response_object['users'] = find_all()
     return jsonify(response_object)
 
 @bp.route('/login', methods=('GET', 'POST'))
 def login():
-    db = get_db()
-    users = db.users
     response_object = {'status': 'success'}
 
     if request.method == 'POST':
         post_data = request.get_json()
 
         email = post_data.get('email')
-        password = request.form['password']
+        password = post_data.get('password')
         error = None
 
-        user = users.find_one({"email": email})
+        user = find_by_email({"email": email})
 
         if user is None:
-            response_object['message'] = 'Incorrect email.'
-        elif not check_password_hash(user['password'], password):
+            response_object['message'] = 'Couldnt find email.'
+            error = 'Couldnt find email.'
+        if not check_password_hash(user['password'], password):
             response_object['message'] = 'Incorrect password.'
+            error = 'Incorrect password.'
 
         if error is None:
             session.clear()
-            session['user_id'] = user['_id']
-            response_object['message'] = 'User logged in!'
 
-        flash(error)
+            print("1 - login email: ", user['email'])
+
+            session['user_email'] = user['email']
+
+            print("2 - session email: ", session['user_email'])
+
+            response_object['message'] = 'User logged in!'
 
     return jsonify(response_object)
 
 @bp.before_app_request
 def load_logged_in_user():
-    user_id = session.get('user_id')
+    user_email = session.get('user_email')
 
-    if user_id is None:
+    print("load_logged")
+    print("3 - session logged email: ", user_email)
+
+    if user_email is None:
         g.user = None
     else:
-        db = get_db()
-        users = db.users
-        g.user = users.find_one({"user_id": user_id})
+        g.user = find_by_email(user_email)
 
 @bp.route('/logout')
 def logout():

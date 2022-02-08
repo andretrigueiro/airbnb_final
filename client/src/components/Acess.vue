@@ -17,14 +17,14 @@
             title="Login"
             hide-footer>
       <b-form @submit="onSubmitLogin" class="w-100">
-        <b-form-group id="form-user-group"
-                    label="User:"
-                    label-for="form-user-input">
-          <b-form-input id="form-user-input"
+        <b-form-group id="form-email-group"
+                    label="Email:"
+                    label-for="form-email-input">
+          <b-form-input id="form-email-input"
                         type="text"
-                        v-model="loginUserForm.user"
+                        v-model="loginUserForm.email"
                         required
-                        placeholder="Enter Username">
+                        placeholder="Enter Email">
           </b-form-input>
         </b-form-group>
         <b-form-group id="form-password-group"
@@ -41,6 +41,10 @@
           <b-button type="submit" variant="primary">Submit</b-button>
         </b-button-group>
       </b-form>
+      <alert  :message=message
+              v-if="showMessage"
+      >
+      </alert>
     </b-modal>
     <!-- SIGN IN MODAL -->
     <b-modal ref="SignInModal"
@@ -111,7 +115,7 @@ export default {
       message: '',
       showMessage: true,
       loginUserForm: {
-        user: '',
+        email: '',
         password: '',
       },
       signinUserForm: {
@@ -138,7 +142,7 @@ export default {
           console.error(error);
         });
     },
-    addUser(payload) {
+    registerUser(payload) {
       const path = 'http://localhost:5000/auth/register';
       axios.post(path, payload)
         .then((res) => {
@@ -151,23 +155,27 @@ export default {
           this.getUsers();
         });
     },
-    initForm() {
-      this.loginUserForm.user = '';
-      this.loginUserForm.password = '';
-      this.signinUserForm.user = '';
-      this.signinUserForm.password = '';
-      this.signinUserForm.confirmPassword = '';
-      this.signinUserForm.email = '';
-      this.signinUserForm.type = 'guest';
+    loginUser(payload) {
+      const path = 'http://localhost:5000/auth/login';
+      axios.post(path, payload)
+        .then((res) => {
+          this.message = res.data.message;
+          this.getUsers();
+        })
+        .catch((error) => {
+          // eslint-disable-next-line
+          console.log(error);
+          this.getUsers();
+        });
     },
     onSubmitLogin(evt) {
       evt.preventDefault();
-      this.$refs.LogInModal.hide();
+      // this.$refs.LogInModal.hide();
       const payload = {
-        user: this.loginUserForm.user,
+        email: this.loginUserForm.email,
         password: this.loginUserForm.password,
       };
-      this.addUser(payload);
+      this.loginUser(payload);
       this.initForm();
     },
     matchPassword(password, confirmPassword) {
@@ -188,9 +196,18 @@ export default {
           email: this.signinUserForm.email,
           type: this.signinUserForm.type,
         };
-        this.addUser(payload);
+        this.registerUser(payload);
       }
       this.initForm();
+    },
+    initForm() {
+      this.loginUserForm.user = '';
+      this.loginUserForm.password = '';
+      this.signinUserForm.user = '';
+      this.signinUserForm.password = '';
+      this.signinUserForm.confirmPassword = '';
+      this.signinUserForm.email = '';
+      this.signinUserForm.type = 'guest';
     },
   },
   created() {
