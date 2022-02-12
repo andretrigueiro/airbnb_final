@@ -75,6 +75,7 @@ def login():
             print("- What is in the final session login?")
             print(session)
 
+            response_object['user_email'] = user['email']
             response_object['message'] = 'User logged in!'
             check_session()
 

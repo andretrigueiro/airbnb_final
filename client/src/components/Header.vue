@@ -26,7 +26,12 @@
           <b-nav-item-dropdown right>
             <!-- Using 'button-content' slot -->
             <template #button-content>
-              <em class="text-modifier">User</em>
+              <div v-if="user_logged_email">
+                <strong class="text-modifier">{{ user_logged_email }}</strong>
+              </div>
+              <div v-else>
+                <strong class="text-modifier">User</strong>
+              </div>
             </template>
             <b-dropdown-item href="#">Log In</b-dropdown-item>
             <b-dropdown-item href="#">Sign In</b-dropdown-item>

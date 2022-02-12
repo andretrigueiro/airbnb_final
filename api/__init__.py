@@ -13,7 +13,8 @@ def create_app(test_config=None):
     app.config.from_mapping(
         DEBUG = True,
         SECRET_KEY='dev',
-        SESSION_COOKIE_PATH ='/',
+        # SESSION_COOKIE_PATH='/',
+        # SESSION_COOKIE_SAMESITE="None",
     )
 
     # enable CORS

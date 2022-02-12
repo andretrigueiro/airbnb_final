@@ -112,6 +112,7 @@ export default {
   data() {
     return {
       users: [],
+      user_logged_email: '',
       message: '',
       showMessage: true,
       loginUserForm: {
@@ -160,6 +161,8 @@ export default {
       axios.post(path, payload)
         .then((res) => {
           this.message = res.data.message;
+          this.user_logged_email = res.data.user_email;
+          // console.log(this.user_logged_email);
           this.getUsers();
         })
         .catch((error) => {
