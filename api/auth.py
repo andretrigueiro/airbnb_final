@@ -1,11 +1,9 @@
 import functools
 
 from flask import (
-    Blueprint, flash, g, jsonify, request, session
+    Blueprint, g, jsonify, request, session
 )
 from werkzeug.security import check_password_hash, generate_password_hash
-
-from api.db.config_db import get_db
 
 from api.db.mongodb.users_db import find_all, find_by_email, find_one, set_host, insert_one
 
@@ -64,24 +62,33 @@ def login():
             error = 'Incorrect password.'
 
         if error is None:
+            print("- What is in session before clear?")
+            print(session)
             session.clear()
 
-            print("1 - login email: ", user['email'])
-
             session['user_email'] = user['email']
+            session.modified = True
+            session.permanent = True
 
-            print("2 - session email: ", session['user_email'])
+            print("- Session new email: ", session['user_email'])
+
+            print("- What is in the final session login?")
+            print(session)
 
             response_object['message'] = 'User logged in!'
+            check_session()
 
     return jsonify(response_object)
 
+def check_session():
+    print("- Check function session")
+    print(session)
+
 @bp.before_app_request
 def load_logged_in_user():
+    print("- Initial before_app_request SESSION: ")
+    print(session)
     user_email = session.get('user_email')
-
-    print("load_logged")
-    print("3 - session logged email: ", user_email)
 
     if user_email is None:
         g.user = None
