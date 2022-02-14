@@ -16,7 +16,8 @@ def find_all():
 
 def find_by_email(email):
     result = DATABASE.users.find_one(email)
-    result = convert_one_id_to_string(result)
+    if result:
+        result = convert_one_id_to_string(result)
     return result
 
 def find_one(user_id):

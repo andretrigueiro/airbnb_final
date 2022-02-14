@@ -2,10 +2,10 @@
   <div class="container">
     <div class="row">
       <div class="col-sm-12">
-        <b-button type="button" size="lg" variant="success" v-b-modal.login-modal pill>
+        <b-button type="button" size="sm" variant="success" v-b-modal.login-modal pill>
           Log in
         </b-button>
-        <b-button type="button" size="lg" variant="primary" v-b-modal.signin-modal pill>
+        <b-button type="button" size="sm" variant="primary" v-b-modal.signin-modal pill>
           Sign in
         </b-button>
         <br><br>
@@ -106,13 +106,14 @@
 
 <script>
 import axios from 'axios';
+import { store, mutations } from '../store';
 import Alert from './Alert.vue';
 
 export default {
   data() {
     return {
       users: [],
-      user_logged_email: '',
+      user_email_logged: '',
       message: '',
       showMessage: true,
       loginUserForm: {
@@ -128,10 +129,18 @@ export default {
       },
     };
   },
+  computed: {
+    user_logged() {
+      return store.userLogged;
+    },
+  },
   components: {
     alert: Alert,
   },
   methods: {
+    setUserLoogedEmail() {
+      mutations.setEmailSession(this.user_email_logged);
+    },
     getUsers() {
       const path = 'http://localhost:5000/users/all_users';
       axios.get(path)
@@ -161,8 +170,10 @@ export default {
       axios.post(path, payload)
         .then((res) => {
           this.message = res.data.message;
-          this.user_logged_email = res.data.user_email;
-          // console.log(this.user_logged_email);
+          this.user_email_logged = res.data.user_email;
+          this.setUserLoogedEmail();
+          // console.log(this.user_email_logged);
+          // console.log(store.userLogged);
           this.getUsers();
         })
         .catch((error) => {
@@ -215,6 +226,11 @@ export default {
   },
   created() {
     this.getUsers();
+    console.log('created');
+  },
+  updated() {
+    this.getUsers();
+    console.log('updated');
   },
 };
 </script>

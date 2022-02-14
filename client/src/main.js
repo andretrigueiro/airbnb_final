@@ -1,5 +1,6 @@
 import { BootstrapVue, IconsPlugin } from 'bootstrap-vue';
 import Vue from 'vue';
+import VueCookies from 'vue-cookies';
 import App from './App.vue';
 import router from './router';
 
@@ -11,6 +12,9 @@ import 'bootstrap-vue/dist/bootstrap-vue.css';
 Vue.use(BootstrapVue);
 // Optionally install the BootstrapVue icon components plugin
 Vue.use(IconsPlugin);
+
+Vue.use(VueCookies);
+Vue.$cookies.config('30d');
 
 Vue.config.productionTip = false;
 

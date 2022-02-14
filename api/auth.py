@@ -56,9 +56,11 @@ def login():
 
         if user is None:
             response_object['message'] = 'Couldnt find email.'
+            response_object['user_email'] = ''
             error = 'Couldnt find email.'
         if not check_password_hash(user['password'], password):
             response_object['message'] = 'Incorrect password.'
+            response_object['user_email'] = ''
             error = 'Incorrect password.'
 
         if error is None:

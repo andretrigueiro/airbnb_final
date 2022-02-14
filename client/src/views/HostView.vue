@@ -1,19 +1,28 @@
 <template>
   <div class="host-interface">
     <h1>Host Interface</h1>
+    <h2>{{ user_logged }}</h2>
+    <div>
+      <b-button variant="primary" size="lg">Cadastrar nova casa</b-button>
+    </div>
     <hr><br><br>
-    <Acess/>
   </div>
 </template>
 
 <script>
 // @ is an alias to /src
-import Acess from '@/components/Acess.vue';
+import { store } from '../store';
 
 export default {
-  name: 'Host',
-  components: {
-    Acess,
+  data() {
+    return {
+      user_email_logged: '',
+    };
+  },
+  computed: {
+    user_logged() {
+      return store.userLogged;
+    },
   },
 };
 </script>
