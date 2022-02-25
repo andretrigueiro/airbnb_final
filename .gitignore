@@ -2,6 +2,8 @@
 client/node_modules/
 /dist/
 api/env/
+api/uploads
+api/downloads
 __pycache__
 
 instance/

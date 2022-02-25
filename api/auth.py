@@ -89,8 +89,8 @@ def check_session():
 
 @bp.before_app_request
 def load_logged_in_user():
-    print("- Initial before_app_request SESSION: ")
-    print(session)
+    # print("- Initial before_app_request SESSION: ")
+    # print(session)
     user_email = session.get('user_email')
 
     if user_email is None:

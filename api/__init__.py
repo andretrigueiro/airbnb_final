@@ -1,5 +1,6 @@
 from flask import Flask, jsonify, session
 from flask_cors import CORS
+import boto3
 
 from api.db.config_db import init_app
 
@@ -13,12 +14,14 @@ def create_app(test_config=None):
     app.config.from_mapping(
         DEBUG = True,
         SECRET_KEY='dev',
-        # SESSION_COOKIE_PATH='/',
-        # SESSION_COOKIE_SAMESITE="None",
+        UPLOAD_FOLDER = "uploads",
+        BUCKET = "airbnb-clone-project",
     )
 
     # enable CORS
     CORS(app, supports_credentials=True, resources={r'/*': {'origins': '*'}})
+
+    s3 = boto3.resource('s3')
 
     # sanity check route
     @app.route('/ping', methods=['GET'])
@@ -29,11 +32,15 @@ def create_app(test_config=None):
     init_app(app)
 
     from . import auth
-    CORS(auth.bp)
     app.register_blueprint(auth.bp)
+    CORS(auth.bp)
 
     from . import users
     app.register_blueprint(users.bp)
     CORS(users.bp)
+
+    from . import files
+    app.register_blueprint(files.bp)
+    CORS(files.bp)
 
     return app

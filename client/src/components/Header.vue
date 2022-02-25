@@ -166,6 +166,12 @@ export default {
     alert: Alert,
   },
   methods: {
+    checkUser() {
+      if (!this.$cookies.get('user_email')) {
+        return false;
+      }
+      return true;
+    },
     setEmailLogger() {
       mutations.setEmailSession(this.user_email_logged);
     },
